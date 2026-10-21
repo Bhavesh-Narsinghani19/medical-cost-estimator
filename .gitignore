@@ -1,0 +1,29 @@
+
+# Dataset - do not upload
+insurance.csv
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Environment variables and secrets
+.env
+
+# Editor and operating-system files
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Generated model files
+*.pkl
+*.joblib
+
+# Test and coverage cache
+.pytest_cache/
+.coverage
+    
