@@ -1,15 +1,17 @@
 # Medical Cost Estimator
 
-A machine learning project that predicts estimated medical insurance charges based on personal and lifestyle-related features.
+A machine learning project that predicts estimated annual medical insurance charges based on personal and lifestyle-related features. The project uses Python and Scikit-learn to train and evaluate regression models, and provides both a terminal-based interface and a web interface built with Streamlit.
 
 ## Features
 
 - Predicts estimated annual medical insurance charges.
 - Accepts custom user input through the terminal.
-- Uses data preprocessing for categorical features.
-- Trains a Linear Regression model.
-- Evaluates performance using Mean Absolute Error (MAE) and R² score.
+- Provides an interactive web interface using Streamlit.
+- Preprocesses categorical features using one-hot encoding.
+- Trains and compares Linear Regression and Random Forest Regression models.
+- Evaluates model performance using Mean Absolute Error (MAE), Root Mean Squared Error (RMSE), and R² score.
 - Visualizes actual versus predicted insurance charges.
+- Selects the better-performing model based on Mean Absolute Error.
 
 ## Technologies Used
 
@@ -17,60 +19,139 @@ A machine learning project that predicts estimated medical insurance charges bas
 - Pandas
 - Scikit-learn
 - Matplotlib
+- Streamlit
 - Git and GitHub
 
 ## Input Features
 
-The model uses the following inputs:
+The model uses the following input features:
 
-- Age
-- Sex
-- Body Mass Index (BMI)
-- Smoking status
-- Region
+- **Age:** Age of the individual.
+- **Sex:** Male or female.
+- **BMI:** Body Mass Index.
+- **Smoker:** Smoking status.
+- **Region:** Residential region.
+
+The target variable is `charges`, representing medical insurance charges.
 
 ## Dataset
 
-The dataset file `insurance.csv` is not included in this repository because redistribution permission has not been established.
+The `insurance.csv` dataset is not included in this repository because permission to redistribute it has not been established.
 
-To run this project, obtain an authorized copy of the dataset and place it in the project root directory with the filename `insurance.csv`.
+To run the project, obtain an authorized copy of the dataset and place it in the project root directory with the filename `insurance.csv`.
 
-The dataset should contain the columns required by the program, including `age`, `sex`, `bmi`, `smoker`, `region`, and `charges`.
+The dataset must contain the following columns:
+
+- `age`
+- `sex`
+- `bmi`
+- `smoker`
+- `region`
+- `charges`
+
+The dataset is excluded through `.gitignore` to prevent accidental uploading to GitHub.
 
 ## Installation and Setup
 
-1. Clone or download this repository.
-2. Install Python 3.
-3. Install the required libraries:
+### 1. Clone the repository
 
-   ```bash
-   pip install -r requirements.txt
-   ```
+```bash
+git clone YOUR_GITHUB_REPOSITORY_URL
+cd YOUR_REPOSITORY_NAME
+```
 
-4. Place an authorized copy of `insurance.csv` in the project folder.
-5. Run the program:
+Replace the placeholders with your actual GitHub repository URL and repository name.
 
-   ```bash
-   python medical_cost_estimator.py
-   ```
+### 2. Create and activate a virtual environment (recommended)
 
-6. Enter the requested details when prompted to receive a prediction.
+On Windows:
+
+```bash
+python -m venv .venv
+.venv\Scripts\activate
+```
+
+### 3. Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Add the dataset
+
+Place your authorized `insurance.csv` file in the project's root directory, alongside `app.py` and `medical_cost_estimator.py`.
+
+## Running the Project
+
+### Option 1: Terminal-based application
+
+Run:
+
+```bash
+python medical_cost_estimator.py
+```
+
+Enter the requested details when prompted to receive a medical insurance charge prediction.
+
+### Option 2: Streamlit web application
+
+Run:
+
+```bash
+streamlit run app.py
+```
+
+Streamlit will start a local web server and provide a URL, usually `http://localhost:8501`, where you can open the application in your browser.
+
+Enter the requested personal and lifestyle-related details in the web interface to obtain an estimated insurance charge.
 
 ## Model Evaluation
 
-The current Linear Regression model achieved the following results on the existing dataset:
+The project compares Linear Regression and Random Forest Regression using a train-test split.
 
-- **Mean Absolute Error (MAE):** 4222.91
-- **R² Score:** 0.7801
+The following results were obtained from the current dataset and model configuration:
 
-These results are from the current version and may change after further improvements.
+| Model | MAE | RMSE | R² Score |
+|---|---:|---:|---:|
+| Linear Regression | $4,222.91 | $5,843.15 | 0.7801 |
+| Random Forest Regression | $2,650.23 | $4,673.59 | 0.8593 |
+
+Random Forest Regression performed better in this evaluation, achieving a lower MAE and RMSE and a higher R² score.
+
+The results may vary if the dataset, preprocessing, model configuration, or train-test split changes.
+
+A model comparison visualization is available in `images/model_comparison.png`.
+
+## Project Structure
+
+```text
+Medical-Cost-Estimator/
+├── .streamlit/
+│   └── config.toml
+├── images/
+│   └── model_comparison.png
+├── .gitignore
+├── README.md
+├── app.py
+├── medical_cost_estimator.py
+├── requirements.txt
+└── insurance.csv  # Local file only; not committed to Git
+```
+
+The `insurance.csv` file is shown for reference only and should not be uploaded to the repository.
 
 ## Disclaimer
 
-This project is intended for educational purposes only. Its predictions are estimates and should not be treated as actual insurance quotes or professional financial advice.
+This project is intended for educational purposes only. Predictions are estimates based on the dataset and trained machine learning models. They are not actual insurance quotes, medical advice, or professional financial advice.
 
 ## Future Improvements
 
-- Compare Linear Regression with Random Forest Regression.
-- Improve model evaluation and visualizations.
-- Develop a web interface using Streamlit.
+- Improve model evaluation using cross-validation.
+- Experiment with additional regression algorithms and hyperparameter tuning.
+- Add more informative model performance visualizations.
+- Improve input validation and error handling.
+- Deploy the Streamlit application for public access.
+
+## Author
+
+Developed as a machine learning project to explore data preprocessing, regression models, model evaluation, and interactive web application development.
