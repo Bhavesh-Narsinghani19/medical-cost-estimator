@@ -2,6 +2,8 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn.compose import ColumnTransformer
@@ -30,10 +32,23 @@ preprocessor = ColumnTransformer(
     remainder="passthrough"
 )
 
-# 5. Create the machine learning pipeline
-model = Pipeline([
+# 5. Create both machine learning models
+
+# Model 1: Linear Regression
+linear_model = Pipeline([
     ("preprocessor", preprocessor),
     ("regressor", LinearRegression())
+])
+
+# Model 2: Random Forest Regression
+random_forest_model = Pipeline([
+    ("preprocessor", preprocessor),
+    ("regressor", RandomForestRegressor(
+        n_estimators=100,
+        random_state=42,
+        min_samples_leaf=2,
+        n_jobs=-1
+    ))
 ])
 
 # 6. Split data into training and testing sets
@@ -41,31 +56,84 @@ X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, random_state=42
 )
 
-# 7. Train the model
-model.fit(X_train, y_train)
 
-# 8. Make predictions on test data
-y_pred = model.predict(X_test)
+# 7. Train both models
+linear_model.fit(X_train, y_train)
+random_forest_model.fit(X_train, y_train)
 
-# 9. Evaluate the model
-mae = mean_absolute_error(y_test, y_pred)
-r2 = r2_score(y_test, y_pred)
+# 8. Make predictions using both models
+linear_predictions = linear_model.predict(X_test)
+rf_predictions = random_forest_model.predict(X_test)
 
-print("===== MEDICAL COST ESTIMATOR =====")
+# 9. Evaluate both models
+models = {
+    "Linear Regression": linear_predictions,
+    "Random Forest": rf_predictions
+}
+
+print("\n===== MODEL COMPARISON =====")
 print("Total records:", len(df))
 print("Training records:", len(X_train))
 print("Testing records:", len(X_test))
-print(f"Mean Absolute Error (MAE): {mae:.2f}")
-print(f"R2 Score: {r2:.4f}")
 
-# 10. Plot actual vs predicted charges
-plt.figure(figsize=(8, 5))
-plt.scatter(y_test, y_pred, alpha=0.6)
-plt.xlabel("Actual Insurance Charges")
-plt.ylabel("Predicted Insurance Charges")
-plt.title("Actual vs Predicted Medical Costs")
+for name, predictions in models.items():
+    mae = mean_absolute_error(y_test, predictions)
+    rmse = mean_squared_error(y_test, predictions) ** 0.5
+    r2 = r2_score(y_test, predictions)
+
+    print(f"\n{name}")
+    print(f"MAE:  ${mae:,.2f}")
+    print(f"RMSE: ${rmse:,.2f}")
+    print(f"R2 Score: {r2:.4f}")
+
+# Select the model with the lower MAE
+best_model_name = min(
+    models,
+    key=lambda name: mean_absolute_error(y_test, models[name])
+)
+
+print("\nBest model based on MAE:", best_model_name)
+
+
+# 10. Plot actual vs predicted charges for both models
+
+plt.figure(figsize=(9, 6))
+
+plt.scatter(
+    y_test,
+    linear_predictions,
+    alpha=0.5,
+    label="Linear Regression"
+)
+
+plt.scatter(
+    y_test,
+    rf_predictions,
+    alpha=0.5,
+    label="Random Forest"
+)
+
+# Reference line for perfect predictions
+minimum = min(y_test.min(), linear_predictions.min(),
+              rf_predictions.min())
+maximum = max(y_test.max(), linear_predictions.max(),
+              rf_predictions.max())
+
+plt.plot(
+    [minimum, maximum],
+    [minimum, maximum],
+    linestyle="--",
+    label="Perfect prediction"
+)
+
+plt.xlabel("Actual Insurance Charges ($)")
+plt.ylabel("Predicted Insurance Charges ($)")
+plt.title("Actual vs Predicted: Model Comparison")
+plt.legend()
 plt.tight_layout()
+plt.savefig("images/model_comparison.png", dpi=300, bbox_inches="tight")
 plt.show()
+
 
 
 # 11. Take custom input from the user
@@ -134,7 +202,14 @@ new_person = pd.DataFrame([{
 }])
 
 # Predict insurance charges
-predicted_charge = model.predict(new_person)[0]
+if best_model_name == "Linear Regression":
+    selected_model = linear_model
+else:
+    selected_model = random_forest_model
+
+predicted_charge = selected_model.predict(new_person)[0]
+
+print("Model used:", best_model_name)
 
 # Display the result
 print("\n===== PREDICTION RESULT =====")
